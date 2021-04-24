@@ -4,6 +4,14 @@ import typing
 
 
 def process_exists(process_name: str) -> bool:
+    """Checks to see if a process exists or is running
+
+    Args:
+        process_name (str): Process/App to check if running
+
+    Returns:
+        bool: boolean base on if Process/App is running
+    """
     programs: str = str(check_output('tasklist'))
 
     if process_name in programs:
@@ -13,6 +21,11 @@ def process_exists(process_name: str) -> bool:
 
 
 def restart_system(program: str) -> None:
+    """Will restart machine if program is not running
+
+    Args:
+        program (str): Process/App to check if running
+    """
     is_program_running: bool = process_exists(program)
 
     if is_program_running:
