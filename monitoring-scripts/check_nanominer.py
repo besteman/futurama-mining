@@ -34,7 +34,7 @@ def restart_system(program: str) -> None:
     else:
         print(f"{program} is not Running\n")
         print("Restarting")
-        os.system("shutdown /r /t 1")
+        system("shutdown /r /t 1")
 
 
 restart_system('nanominer')
