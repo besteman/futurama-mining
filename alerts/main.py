@@ -27,7 +27,7 @@ def get_workers_reported_hashrate() -> dict:
 
 
 def check_workers_hashrate(workers_hashrate: dict) -> list:
-    """Check if any workers' hashrate is at 0, if it is it will all to list and return
+    """Check if any workers' hashrate is at 0, if hashrate is at 0 it will all to list and return
 
     Args:
         workers_hashrate (dict): Workers and their hashrates
