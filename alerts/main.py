@@ -1,38 +1,56 @@
 import os
+import smtplib
 
 from dotenv import load_dotenv
 import requests
-import smtplib
 
 load_dotenv()
 
-GMAIL_ADDRESS = os.getenv('gmail_address')
-GMAIL_PW = os.getenv('gmail_pw')
+GMAIL_ADDRESS: str = os.getenv('gmail_address')
+GMAIL_PW: str = os.getenv('gmail_pw')
 
-BASE_ETH_URL = 'https://api.nanopool.org/v1/eth/'
-ETH_MINER_ADDRESS = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
-EMAIL_ADDRESS = ['9413570978@vtext.com']
+BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
+ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
+EMAIL_ADDRESS: list = ['9413570978@vtext.com']
 
 
-def get_workers_reported_hashrate():
+def get_workers_reported_hashrate() -> dict:
+    """Hits Nanopool API to get last reported hashrates
+
+    Returns:
+        dict: A dict of workers and their hashrates
+    """
     response = requests.get(f'{BASE_ETH_URL}reportedhashrates/{ETH_MINER_ADDRESS}')
-    response = response.json()
+    response: dict = response.json()
 
     return response['data']
 
 
-def check_workers_hashrate(workers_hashrate):
-    offline_workers = []
+def check_workers_hashrate(workers_hashrate: dict) -> list:
+    """Check if any workers' hashrate is at 0, if it is it will all to list and return
+
+    Args:
+        workers_hashrate (dict): Workers and their hashrates
+
+    Returns:
+        list: list of workers that hashrate is equal 0
+    """
+    offline_workers: list = []
 
     for worker in workers_hashrate:
-        if worker['hashrate'] == 0:
+        if worker['hashrate'] > 0:
             offline_workers.append(worker['worker'])
 
     return offline_workers
 
 
-def send_email(offline_workers):
-    email_body = f"""Panic! At the Hashrate! \n{', '.join(offline_workers)} rigs are reporting 0 hashrate"""
+def send_email(offline_workers: list) -> None:
+    """If any workers' hashrate is equal to zero, this function will be called and send any email
+
+    Args:
+    offline_workers (list): Workers that hashrate is equal to zero
+    """
+    email_body: str = f"""Panic! At the Hashrate! \n{', '.join(offline_workers)} rigs are reporting 0 hashrate"""
 
     try:
         server = smtplib.SMTP(host='smtp.gmail.com', port=587)
@@ -47,13 +65,15 @@ def send_email(offline_workers):
 
 
 def main():
+    """Main function that start the process
+    """
     print("Starting")
 
-    workers_hashrate = get_workers_reported_hashrate()
+    workers_hashrate: dict = get_workers_reported_hashrate()
 
     print(workers_hashrate)
 
-    offline_workers = check_workers_hashrate(workers_hashrate)
+    offline_workers: list = check_workers_hashrate(workers_hashrate)
 
     print(offline_workers)
 
