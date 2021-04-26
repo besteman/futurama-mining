@@ -1,10 +1,8 @@
-import json
 import os
 
 from dotenv import load_dotenv
 import requests
 import smtplib
-from twilio.rest import Client
 
 load_dotenv()
 
@@ -44,10 +42,6 @@ def send_email(offline_workers):
         server.starttls()
         server.login(GMAIL_ADDRESS, GMAIL_PW)
 
-        subject = 'Panic! At the Hashrate!'
-        body = f'{", ".join(offline_workers)} rigs are reporting 0 hashrate'
-
-        message = f'Subject: {subject}\n\n{body}'
         server.sendmail(GMAIL_ADDRESS, EMAIL_ADDRESS, email_body)
         server.quit()
     except Exception as e:
@@ -68,7 +62,7 @@ def main():
     if offline_workers:
         send_email(offline_workers)
     else:
-        print(f'No Workers are at 0')
+        print('No Workers are at 0')
 
 
 if __name__ == "__main__":
