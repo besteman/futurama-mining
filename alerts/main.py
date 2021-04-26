@@ -6,8 +6,6 @@ import smtplib
 
 load_dotenv()
 
-ACCOUNT_SID = os.getenv('account_sid')
-AUTH_TOKEN = os.getenv('auth_token')
 GMAIL_ADDRESS = os.getenv('gmail_address')
 GMAIL_PW = os.getenv('gmail_pw')
 
