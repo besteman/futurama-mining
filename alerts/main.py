@@ -68,7 +68,7 @@ def main():
     if offline_workers:
         send_email(offline_workers)
     else:
-        print(f'No Workers are not at 0')
+        print(f'No Workers are at 0')
 
 
 if __name__ == "__main__":
