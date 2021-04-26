@@ -3,6 +3,7 @@ import os
 
 from dotenv import load_dotenv
 import requests
+import smtplib
 from twilio.rest import Client
 
 load_dotenv()
@@ -14,8 +15,7 @@ GMAIL_PW = os.getenv('gmail_pw')
 
 BASE_ETH_URL = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
-BASE_LIMIT = 950
-EMAIL_ADDRESS = ['9413570978@vtext.com', '+19896074589']
+EMAIL_ADDRESS = ['9413570978@vtext.com']
 
 
 def get_workers_reported_hashrate():
@@ -45,10 +45,10 @@ def send_email(offline_workers):
         server.login(GMAIL_ADDRESS, GMAIL_PW)
 
         subject = 'Panic! At the Hashrate!'
-        body = f'{', '.join(offline_workers)} rigs are reporting 0 hashrate'
+        body = f'{", ".join(offline_workers)} rigs are reporting 0 hashrate'
 
         message = f'Subject: {subject}\n\n{body}'
-        server.sendmail(GMAIL_ADDRESS, receiver, email_body)
+        server.sendmail(GMAIL_ADDRESS, EMAIL_ADDRESS, email_body)
         server.quit()
     except Exception as e:
         print(f'Something went wrong... {e}')
@@ -68,7 +68,7 @@ def main():
     if offline_workers:
         send_email(offline_workers)
     else:
-        print(f'No Workers are not below the {BASE_LIMIT}')
+        print(f'No Workers are not at 0')
 
 
 if __name__ == "__main__":
