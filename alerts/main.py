@@ -42,7 +42,7 @@ def check_workers_hashrate(workers_hashrate: dict) -> list:
     offline_workers: list = []
 
     for worker in workers_hashrate:
-        if worker['hashrate'] == 0:
+        if worker['hashrate'] > 0:
             offline_workers.append(worker['worker'])
 
     return offline_workers
