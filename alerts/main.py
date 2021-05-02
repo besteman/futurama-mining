@@ -6,8 +6,8 @@ import requests
 
 load_dotenv()
 
-GMAIL_ADDRESS: str = os.environ('gmail_address')
-GMAIL_PW: str = os.environ('gmail_pw')
+GMAIL_ADDRESS: str = os.environ['gmail_address']
+GMAIL_PW: str = os.environ['gmail_pw']
 
 BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
