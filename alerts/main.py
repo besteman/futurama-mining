@@ -1,17 +1,21 @@
 import os
-import smtplib
+# import smtplib
 
 from dotenv import load_dotenv
 import requests
+from twilio.rest import Client
 
 load_dotenv()
 
-GMAIL_ADDRESS: str = os.environ['gmail_address']
-GMAIL_PW: str = os.environ['gmail_pw']
+ACCOUNT_SID = os.environ['account_sid']
+AUTH_TOKEN = os.environ['auth_token']
+
+# GMAIL_ADDRESS: str = os.environ['gmail_address']
+# GMAIL_PW: str = os.environ['gmail_pw']
 
 BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
-EMAIL_ADDRESS: list = ['9413570978@vtext.com']
+PHONE_NUMBERS: list = ['+19413570978', '+19896074589']
 
 
 def get_workers_reported_hashrate() -> dict:
@@ -50,18 +54,26 @@ def send_email(offline_workers: list) -> None:
     Args:
     offline_workers (list): Workers that hashrate is equal to zero
     """
-    email_body: str = f"""Panic! At the Hashrate! \n{', '.join(offline_workers)} rigs are reporting 0 hashrate"""
+    txt_body: str = f"""Panic! At the Hashrate! \n{', '.join(offline_workers)} rigs are reporting 0 hashrate"""
 
-    try:
-        server = smtplib.SMTP(host='smtp.gmail.com', port=587)
-        server.ehlo()
-        server.starttls()
-        server.login(GMAIL_ADDRESS, GMAIL_PW)
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
-        server.sendmail(GMAIL_ADDRESS, EMAIL_ADDRESS, email_body)
-        server.quit()
-    except Exception as e:
-        print(f'Something went wrong... {e}')
+    for phone_number in PHONE_NUMBERS:
+        client.api.account.messages.create(
+            to=phone_number,
+            from_="+12132925602",
+            body=txt_body)
+
+    # try:
+    #     server = smtplib.SMTP(host='smtp.gmail.com', port=587)
+    #     server.ehlo()
+    #     server.starttls()
+    #     server.login(GMAIL_ADDRESS, GMAIL_PW)
+
+    #     server.sendmail(GMAIL_ADDRESS, EMAIL_ADDRESS, email_body)
+    #     server.quit()
+    # except Exception as e:
+    #     print(f'Something went wrong... {e}')
 
 
 def main():
