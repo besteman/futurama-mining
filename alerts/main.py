@@ -91,10 +91,10 @@ def main():
 
     print(offline_workers)
 
-    # if offline_workers:
-    #     send_email(offline_workers)
-    # else:
-    #     print('No Workers are at 0')
+    if offline_workers:
+        send_email(offline_workers)
+    else:
+        print('No Workers are at 0')
 
 
 if __name__ == "__main__":
