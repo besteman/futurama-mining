@@ -17,7 +17,7 @@ BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
 PHONE_NUMBERS: list = ['+19413570978', '+19896074589']
 
-BLACKLIST = ['best_3070', '3080_is_better', 'quartz_3070', 'planet_express']
+BLACKLIST = ['best_3070', '3080_is_better', 'quartz_3070', 'planet_express', 'Nimbus']
 
 
 def get_workers_reported_hashrate() -> dict:
