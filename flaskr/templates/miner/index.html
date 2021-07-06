@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Miners{% endblock %}</h1>
+  {% if g.user %}
+  <a class="action" href="{{ url_for('index.create') }}">New</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% for miner in miners %}
+    <article class="miner">
+      <header>
+        <div>
+          <h1>{{ miner['name'] }}</h1>
+          <div class="about">Created on {{ miner['created_at'].strftime('%Y-%m-%d') }}</div>
+          <a class="action" href="{{ url_for('index.update', id=miner['id']) }}">Edit</a>
+        </div>
+      </header>
+      <p class="body">{{ miner['enabled'] }}</p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
