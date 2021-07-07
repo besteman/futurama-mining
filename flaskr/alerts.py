@@ -1,11 +1,12 @@
 import os
 # import smtplib
 
-from flaskr.index import get_enabled_miners_from_db
 
 from dotenv import load_dotenv
 import requests
 from twilio.rest import Client
+
+from flaskr.db import get_db
 
 load_dotenv()
 
@@ -20,22 +21,22 @@ ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
 PHONE_NUMBERS: list = ['+19413570978', '+19896074589']
 
 
-# def get_enabled_miners_from_db():
-#     db = get_db()
+def get_enabled_miners_from_db():
+    db = get_db()
 
-#     enabled_miners = []
+    enabled_miners = []
 
-#     enabled_miners_from_db = db.execute(
-#         'SELECT name'
-#         ' FROM miner where enabled = 1'
-#     ).fetchall()
+    enabled_miners_from_db = db.execute(
+        'SELECT name'
+        ' FROM miner where enabled = 1'
+    ).fetchall()
 
-#     for miner in enabled_miners:
-#         enabled_miners.append(enabled_miners_from_db['name'])
+    for miner in enabled_miners:
+        enabled_miners.append(enabled_miners_from_db['name'])
 
-#     print (enabled_miners)
+    print (enabled_miners)
 
-#     return enabled_miners
+    return enabled_miners
 
 
 def get_workers_reported_hashrate() -> dict:

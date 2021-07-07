@@ -38,7 +38,4 @@ def create_app(test_config=None):
     app.register_blueprint(index.bp)
     app.add_url_rule('/', endpoint='index')
 
-    with app.app_context():
-        from . import alerts
-
     return app
