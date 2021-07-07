@@ -12,4 +12,4 @@ ENV FLASK_ENV=production
 
 RUN flask init-db
 
-CMD [ "flask", "run"]
+CMD [ "waitress-serve", "--call", "'flaskr:create_app'"]
