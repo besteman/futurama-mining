@@ -7,13 +7,12 @@
 {% block content %}
   <form method="post">
     <label for="name">Miner</label>
-    <input name="name" id="name"
-      value="{{ request.form['name'] or miner['name'] }}" required>
-      <label for="enable">Enabled?</label>
-      <input type="radio" id="yes" name="enabled" value="{{ request.form['enabled'] }}">
-      <label for="yes">Yes</label><br>
-      <input type="radio" id="no" name="enabled" value="{{ request.form['enabled'] }}">
-      <label for="no">No</label><br>
+    <input name="name" id="name"value="{{ request.form['name'] or miner['name'] }}" required>
+    <label for="enable">Enabled?</label>
+    <input type="radio" id="yes" name="enabled" value="1">
+    <label for="yes">Yes</label><br>
+    <input type="radio" id="no" name="enabled" value="0">
+    <label for="no">No</label><br>
     <input type="submit" value="Save">
   </form>
   <hr>
