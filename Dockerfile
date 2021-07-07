@@ -11,6 +11,8 @@ ENV FLASK_APP=flaskr
 ENV FLASK_ENV=production
 ENV FLASK_RUN_PORT=$PORT
 
+RUN echo $PORT
+
 RUN flask init-db
 
 CMD [ "flask", "run", "--host=0.0.0.0"]
