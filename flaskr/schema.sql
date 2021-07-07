@@ -9,13 +9,10 @@ CREATE TABLE user (
 
 CREATE TABLE miner (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name INTEGER NOT NULL,
+  name INTEGER NOT NULL UNIQUE,
   enabled BOOLEAN NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
-INSERT INTO user (username, password)
-VALUES( 'besteman' , 123);
 
 INSERT INTO miner (name, enabled) 
 VALUES ( 'this', 1 );
