@@ -112,7 +112,7 @@ def get_enabled_miners_from_db():
     enabled_miners = []
 
     enabled_miners_from_db = db.execute(
-        'SELECT name'
+        'SELECT name, enabled'
         ' FROM miner where enabled = 1'
     ).fetchall()
 
