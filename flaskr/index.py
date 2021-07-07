@@ -106,7 +106,7 @@ def get_miner(id, check_author=True):
 
     return miner
 
-@with_appcontext
+
 def get_enabled_miners_from_db():
     db = get_db()
 
