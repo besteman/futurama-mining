@@ -1,1 +1,1 @@
-clock: python alerts/cronjob.py
+clock: python flaskr/alerts/cronjob.py
