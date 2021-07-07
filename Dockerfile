@@ -9,7 +9,8 @@ COPY . .
 
 ENV FLASK_APP=flaskr
 ENV FLASK_ENV=production
+ENV FLASK_RUN_PORT=$PORT
 
 RUN flask init-db
 
-CMD [ "waitress-serve", "--call", "'app/flaskr:create_app'"]
+CMD [ "flask", "run", "--host=''0.0.0.0"]
