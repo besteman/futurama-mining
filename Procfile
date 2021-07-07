@@ -1,2 +1,2 @@
 clock: python flaskr/alerts/cronjob.py
-web: gunicorn "flaskr:create_app()"
+web: export FLASK_APP=flaskr && export FLASK_ENV=production && flask init-db && gunicorn "flaskr:create_app()"
