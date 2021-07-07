@@ -1,6 +1,7 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
+from flask.cli import with_appcontext
 from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
@@ -105,7 +106,7 @@ def get_miner(id, check_author=True):
 
     return miner
 
-
+@with_appcontext
 def get_enabled_miners_from_db():
     db = get_db()
 
