@@ -13,4 +13,4 @@ ENV FLASK_RUN_PORT=$PORT
 
 RUN flask init-db
 
-CMD [ "flask", "run", "--host=''0.0.0.0"]
+CMD [ "flask", "run", "--host=0.0.0.0"]
