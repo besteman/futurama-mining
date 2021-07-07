@@ -8,7 +8,7 @@ RUN pip3 install -r requirements.txt
 COPY . .
 
 ENV FLASK_APP=flaskr
-ENV FLASK_ENV=development
+ENV FLASK_ENV=production
 
 RUN flask init-db
 
