@@ -12,10 +12,28 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
+    db = get_db()
+    users = db.execute(
+        'SELECT * FROM user'
+    ).fetchall()
+
+    if len(users) == 0:
+        print('here and there')
+        db.execute(
+            'INSERT INTO user (username, password)'
+            ' VALUES (?, ?)',
+            ('stephen', generate_password_hash('1234'))
+        )
+        db.execute(
+            'INSERT INTO user (username, password)'
+            ' VALUES (?, ?)',
+            ('besteman', generate_password_hash('123'))
+        )
+        db.commit()
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
         error = None
         user = db.execute(
             'SELECT * FROM user WHERE username = ?', (username,)
@@ -23,7 +41,7 @@ def login():
 
         if user is None:
             error = 'Incorrect username.'
-        elif not user['password'] == password:
+        elif not check_password_hash(user['password'], password):
             error = 'Incorrect password.'
 
         if error is None:
