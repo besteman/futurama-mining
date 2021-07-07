@@ -5,6 +5,7 @@ from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
+from sqlite3 import IntegrityError
 
 
 bp = Blueprint('index', __name__)
@@ -12,6 +13,8 @@ bp = Blueprint('index', __name__)
 
 @bp.route('/')
 def index():
+    temp = get_enabled_miners_from_db()
+    print(temp)
     db = get_db()
     miners = db.execute(
         'SELECT id, name, enabled, created_at'
@@ -29,18 +32,23 @@ def create():
         error = None
 
         if not name:
-            error = 'Title is required.'
+            error = 'Name is required.'
 
         if error is not None:
             flash(error)
         else:
             db = get_db()
-            db.execute(
-                'INSERT INTO miner (name, enabled)'
-                ' VALUES (?, ?)',
-                (name, enabled)
-            )
-            db.commit()
+
+            try:
+                db.execute(
+                    'INSERT INTO miner (name, enabled)'
+                    ' VALUES (?, ?)',
+                    (name, enabled)
+                )
+                db.commit()
+            except IntegrityError as err:
+                db.rollback()
+                return render_template('miner/dup_name.html')
             return redirect(url_for('index.index'))
 
     return render_template('miner/create.html')
@@ -57,7 +65,7 @@ def update(id):
         error = None
 
         if not name:
-            error = 'Title is required.'
+            error = 'Name is required.'
 
         if error is not None:
             flash(error)
@@ -96,3 +104,21 @@ def get_miner(id, check_author=True):
         abort(404, f"Post id {id} doesn't exist.")
 
     return miner
+
+
+def get_enabled_miners_from_db():
+    db = get_db()
+
+    enabled_miners = []
+
+    enabled_miners_from_db = db.execute(
+        'SELECT name'
+        ' FROM miner where enabled = 1'
+    ).fetchall()
+
+    for miner in enabled_miners_from_db:
+        print(miner['name'])
+        print(miner['enabled'])
+        enabled_miners.append(miner['name'])
+
+    return enabled_miners
