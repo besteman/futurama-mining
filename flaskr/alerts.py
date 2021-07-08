@@ -8,7 +8,7 @@ from twilio.rest import Client
 
 from flaskr.db import get_db
 
-import flaskr
+from flaskr import app
 
 load_dotenv()
 
