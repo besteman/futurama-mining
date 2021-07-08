@@ -8,6 +8,8 @@ from twilio.rest import Client
 
 from flaskr.db import get_db
 
+import flaskr
+
 load_dotenv()
 
 # ACCOUNT_SID = os.environ['account_sid'] or None
@@ -22,14 +24,15 @@ PHONE_NUMBERS: list = ['+19413570978', '+19896074589']
 
 
 def get_enabled_miners_from_db():
-    db = get_db()
+    with app.app_context:
+        db = get_db()
 
-    enabled_miners = []
+        enabled_miners = []
 
-    enabled_miners_from_db = db.execute(
-        'SELECT name'
-        ' FROM miner where enabled = 1'
-    ).fetchall()
+        enabled_miners_from_db = db.execute(
+            'SELECT name'
+            ' FROM miner where enabled = 1'
+        ).fetchall()
 
     for miner in enabled_miners:
         enabled_miners.append(enabled_miners_from_db['name'])
