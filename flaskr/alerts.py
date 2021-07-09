@@ -20,7 +20,7 @@ load_dotenv()
 
 BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
-PHONE_NUMBERS: list = ['+19413570978', '+19896074589']
+PHONE_NUMBERS: list = []
 
 
 def get_enabled_miners_from_db():
