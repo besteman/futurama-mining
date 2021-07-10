@@ -19,7 +19,7 @@ load_dotenv()
 
 BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
-PHONE_NUMBERS: list = [os.environ['besteman_number'], os.environ['stephen_number']]
+PHONE_NUMBERS: list = [os.environ.get('besteman_number'), os.environ.get('stephen_number')]
 
 
 def get_enabled_miners_from_db():
@@ -86,7 +86,7 @@ def send_email(offline_workers: list) -> None:
     for phone_number in PHONE_NUMBERS:
         client.api.account.messages.create(
             to=phone_number,
-            from_=os.environ['twilio_number'],
+            from_=os.environ.get('twilio_number'),
             body=txt_body)
 
     # try:
@@ -118,5 +118,3 @@ def main():
     #     send_email(offline_workers)
     # else:
     #     print('No Workers are at 0')
-
-main()
