@@ -16,7 +16,6 @@ bp = Blueprint('index', __name__)
 
 @bp.route('/')
 def index():
-    main()
     db = get_db()
     miners = db.execute(
         'SELECT id, name, enabled, created_at'
@@ -28,6 +27,7 @@ def index():
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
+    main()
     if request.method == 'POST':
         name = request.form['name']
         enabled = request.form['enabled']
