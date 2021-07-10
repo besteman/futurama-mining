@@ -8,6 +8,8 @@ from twilio.rest import Client
 
 from flaskr.db import get_db
 
+import logging
+
 
 load_dotenv()
 
@@ -36,7 +38,7 @@ def get_enabled_miners_from_db():
     for miner in enabled_miners:
         enabled_miners.append(enabled_miners_from_db['name'])
 
-    print (enabled_miners)
+    logging.info(enabled_miners)
 
     return enabled_miners
 
