@@ -1,6 +1,6 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from flaskr import alerts
+from flaskr.alerts import main
 
 # Create an instance of scheduler and add function.
 scheduler = BlockingScheduler()

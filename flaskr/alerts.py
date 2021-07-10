@@ -120,7 +120,3 @@ def main():
     #     send_email(offline_workers)
     # else:
     #     print('No Workers are at 0')
-
-
-if __name__ == 'main':
-    main()
