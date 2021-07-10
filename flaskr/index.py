@@ -8,14 +8,15 @@ from flaskr.auth import login_required
 from flaskr.db import get_db
 from sqlite3 import IntegrityError
 
+from flaskr.alerts import main
+
 
 bp = Blueprint('index', __name__)
 
 
 @bp.route('/')
 def index():
-    temp = get_enabled_miners_from_db()
-    print(temp)
+    main()
     db = get_db()
     miners = db.execute(
         'SELECT id, name, enabled, created_at'
