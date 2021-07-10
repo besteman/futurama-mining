@@ -8,19 +8,28 @@ from flaskr.auth import login_required
 from flaskr.db import get_db
 from sqlite3 import IntegrityError
 
-from flaskr.alerts import main
+from apscheduler.schedulers.blocking import BlockingScheduler
 
+from flaskr.alerts import main
 
 bp = Blueprint('index', __name__)
 
 
 @bp.route('/')
 def index():
+
+
+    # Create an instance of scheduler and add function.
+    scheduler = BlockingScheduler()
+    scheduler.add_job(main, "interval", seconds=10)
+
+    scheduler.start()
     db = get_db()
     miners = db.execute(
         'SELECT id, name, enabled, created_at'
         ' FROM miner'
     ).fetchall()
+
     return render_template('miner/index.html', miners=miners)
 
 
@@ -108,19 +117,3 @@ def get_miner(id, check_author=True):
     return miner
 
 
-def get_enabled_miners_from_db():
-    db = get_db()
-
-    enabled_miners = []
-
-    enabled_miners_from_db = db.execute(
-        'SELECT name, enabled'
-        ' FROM miner where enabled = 1'
-    ).fetchall()
-
-    for miner in enabled_miners_from_db:
-        print(miner['name'])
-        print(miner['enabled'])
-        enabled_miners.append(miner['name'])
-
-    return enabled_miners
