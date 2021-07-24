@@ -68,7 +68,7 @@ def check_workers_hashrate(workers_hashrate: dict) -> list:
 
     enabled_miners: list = get_enabled_miners_from_db()
     for worker in workers_hashrate:
-        if worker['hashrate'] == 0 and worker['worker'] not in enabled_miners:
+        if worker['hashrate'] == 0 and worker['worker'] in enabled_miners:
             offline_workers.append(worker['worker'])
 
     return offline_workers
