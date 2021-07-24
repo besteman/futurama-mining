@@ -30,7 +30,7 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
-
+    app.app_context().push()
     with app.app_context():
         db.create_all()
 
