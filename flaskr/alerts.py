@@ -1,12 +1,11 @@
 import os
 # import smtplib
 
-
+import logging
 from dotenv import load_dotenv
 import requests
 from twilio.rest import Client
 
-from flask import current_app
 
 from flaskr.extensions import db, Miner
 
@@ -31,13 +30,13 @@ def get_enabled_miners_from_db():
 
     enabled_miners_from_db = Miner.query.filter_by(enabled=True).all()
 
-    current_app.logger.info(f'Miners found DB: {enabled_miners_from_db}')
+    logging.info(f'Miners found DB: {enabled_miners_from_db}')
 
     enabled_miners = []
     for miner in enabled_miners_from_db:
         enabled_miners.append(enabled_miners_from_db.name)
 
-    current_app.logger.info(f'enabled_miners are: {enabled_miners}')
+    logging.info(f'enabled_miners are: {enabled_miners}')
 
     return enabled_miners
 
@@ -94,15 +93,15 @@ def send_text_message(offline_workers: list) -> None:
 def main():
     """Main function that start the process
     """
-    current_app.logger.info("Starting Cronjob")
+    logging.info("Starting Cronjob")
 
     workers_hashrate: dict = get_workers_reported_hashrate()
 
-    current_app.logger.info(f'Workers hashrates {workers_hashrate}')
+    logging.info(f'Workers hashrates {workers_hashrate}')
 
     offline_workers: list = check_workers_hashrate(workers_hashrate)
 
-    current_app.logger.info(f'Offline Workers: {offline_workers}')
+    logging.info(f'Offline Workers: {offline_workers}')
 
     # if offline_workers:
     #     send_text_message(offline_workers)
