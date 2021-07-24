@@ -2,6 +2,7 @@ import os
 from logging.config import dictConfig
 from flask import Flask
 from flaskr.extensions import db, User, Miner
+from flaskr.config import Config
 
 
 def create_app(test_config=None):
@@ -11,10 +12,7 @@ def create_app(test_config=None):
     # if __name__ == "__main__":
     #     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
 
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
-    )
+    app.config.from_object(Config)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -29,21 +27,41 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    dictConfig({
-        'version': 1,
-        'formatters': {'default': {
-            'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-        }},
-        'handlers': {'wsgi': {
-            'class': 'logging.StreamHandler',
-            'stream': 'ext://flask.logging.wsgi_errors_stream',
-            'formatter': 'default'
-        }},
-        'root': {
-            'level': 'INFO',
-            'handlers': ['wsgi']
-        }
-    })
+    # dictConfig({
+    #     'version': 1,
+    #     'formatters': {'default': {
+    #         'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    #     }},
+    #     'handlers': {'wsgi': {
+    #         'class': 'logging.StreamHandler',
+    #         'stream': 'ext://flask.logging.wsgi_errors_stream',
+    #         'formatter': 'default'
+    #     }},
+    #     'root': {
+    #         'level': 'INFO',
+    #         'handlers': ['wsgi']
+    #     }
+    # })
+
+    if not app.debug and not app.testing:
+
+        if app.config['LOG_TO_STDOUT']:
+            stream_handler = logging.StreamHandler()
+            stream_handler.setLevel(logging.INFO)
+            app.logger.addHandler(stream_handler)
+        else:
+            if not os.path.exists('logs'):
+                os.mkdir('logs')
+            file_handler = RotatingFileHandler('logs/microblog.log',
+                                               maxBytes=10240, backupCount=10)
+            file_handler.setFormatter(logging.Formatter(
+                '%(asctime)s %(levelname)s: %(message)s '
+                '[in %(pathname)s:%(lineno)d]'))
+            file_handler.setLevel(logging.INFO)
+            app.logger.addHandler(file_handler)
+
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Microblog startup')
 
     db.init_app(app)
     app.app_context().push()
