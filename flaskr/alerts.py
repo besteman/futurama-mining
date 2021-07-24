@@ -1,6 +1,6 @@
 import os
 import psycopg2
-import urlparse
+from urllib.parse import urljoin
 # import smtplib
 
 import logging
@@ -11,7 +11,7 @@ from twilio.rest import Client
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 
-url = urlparse.urlparse(os.environ.get('DATABASE_URL'))
+url = urljoin(os.environ.get('DATABASE_URL'))
 db = "dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname)
 schema = "schema.sql"
 conn = psycopg2.connect(db)
