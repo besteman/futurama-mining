@@ -12,7 +12,7 @@ conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 cur = conn.cursor()
 
-logging.info(f'DB connection info: {DATABASE_URL}, {conn}, {cur}')
+print(f'DB connection info: {DATABASE_URL}, {conn}, {cur}')
 
 load_dotenv()
 
@@ -32,13 +32,13 @@ def get_enabled_miners_from_db():
     cur.execute("""SELECT name FROM miner WHERE enabled = true""")
     rows = cur.fetchall()
 
-    logging.info(f'Miners found DB: {rows}')
+    print(f'Miners found DB: {rows}')
 
     enabled_miners = []
     for miner in rows:
         enabled_miners.append(miner[0])
 
-    logging.info(f'enabled_miners are: {enabled_miners}')
+    print(f'enabled_miners are: {enabled_miners}')
 
     return enabled_miners
 
@@ -95,17 +95,15 @@ def send_text_message(offline_workers: list) -> None:
 def main():
     """Main function that start the process
     """
-    logging.info("Starting Cronjob")
+    print("Starting Cronjob")
 
     workers_hashrate: dict = get_workers_reported_hashrate()
 
-    logging.info(f'Workers hashrates {workers_hashrate}')
+    print(f'Workers hashrates {workers_hashrate}')
 
     offline_workers: list = check_workers_hashrate(workers_hashrate)
 
-    logging.info(f'Offline Workers: {offline_workers}')
-
-    print('test')
+    print(f'Offline Workers: {offline_workers}')
 
     # if offline_workers:
     #     send_text_message(offline_workers)
