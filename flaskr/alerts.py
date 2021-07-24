@@ -6,10 +6,11 @@ from dotenv import load_dotenv
 import requests
 from twilio.rest import Client
 
-from flaskr.db import get_db
+from flask import current_app
 
-import logging
+from flaskr.extensions import db, Miner
 
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 load_dotenv()
 
@@ -23,24 +24,22 @@ BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
 PHONE_NUMBERS: list = [os.environ.get('besteman_number'), os.environ.get('stephen_number')]
 
+schedule = BlockingScheduler()
 
-# def get_enabled_miners_from_db():
 
-#     db = get_db()
+def get_enabled_miners_from_db():
 
-#     enabled_miners = []
+    enabled_miners_from_db = Miner.query.filter_by(enabled=True).all()
 
-#     enabled_miners_from_db = db.execute(
-#         'SELECT name'
-#         ' FROM miner where enabled = 1'
-#     ).fetchall()
+    current_app.logger.info(f'Miners found DB: {enabled_miners_from_db}')
 
-#     for miner in enabled_miners:
-#         enabled_miners.append(enabled_miners_from_db['name'])
+    enabled_miners = []
+    for miner in enabled_miners_from_db:
+        enabled_miners.append(enabled_miners_from_db.name)
 
-#     current_app.logger.info(enabled_miners)
+    current_app.logger.info(f'enabled_miners are: {enabled_miners}')
 
-#     return enabled_miners
+    return enabled_miners
 
 
 def get_workers_reported_hashrate() -> dict:
@@ -66,7 +65,7 @@ def check_workers_hashrate(workers_hashrate: dict) -> list:
     """
     offline_workers: list = []
 
-    # enabled_miners: list = get_enabled_miners_from_db()
+    enabled_miners: list = get_enabled_miners_from_db()
     enabled_miners = []
     for worker in workers_hashrate:
         if worker['hashrate'] == 0 and worker['worker'] not in enabled_miners:
@@ -75,8 +74,8 @@ def check_workers_hashrate(workers_hashrate: dict) -> list:
     return offline_workers
 
 
-def send_email(offline_workers: list) -> None:
-    """If any workers' hashrate is equal to zero, this function will be called and send any email
+def send_text_message(offline_workers: list) -> None:
+    """If any workers' hashrate is equal to zero, this function will be called and send a text message
 
     Args:
     offline_workers (list): Workers that hashrate is equal to zero
@@ -91,32 +90,23 @@ def send_email(offline_workers: list) -> None:
             from_=os.environ.get('twilio_number'),
             body=txt_body)
 
-    # try:
-    #     server = smtplib.SMTP(host='smtp.gmail.com', port=587)
-    #     server.ehlo()
-    #     server.starttls()
-    #     server.login(GMAIL_ADDRESS, GMAIL_PW)
-
-    #     server.sendmail(GMAIL_ADDRESS, EMAIL_ADDRESS, email_body)
-    #     server.quit()
-    # except Exception as e:
-    #     print(f'Something went wrong... {e}')
-
-
+@schedule.scheduled_job('interval', seconds=10)
 def main():
     """Main function that start the process
     """
-    print("Starting")
+    current_app.logger.info("Starting Cronjob")
 
     workers_hashrate: dict = get_workers_reported_hashrate()
 
-    print(workers_hashrate)
+    current_app.logger.info(f'Workers hashrates {workers_hashrate}')
 
     offline_workers: list = check_workers_hashrate(workers_hashrate)
 
-    print(offline_workers)
+    current_app.logger.info(f'Offline Workers: {offline_workers}')
 
     # if offline_workers:
-    #     send_email(offline_workers)
+    #     send_text_message(offline_workers)
     # else:
     #     print('No Workers are at 0')
+
+schedule.start()
