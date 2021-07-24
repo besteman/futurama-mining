@@ -1,14 +1,11 @@
 import os
 import psycopg2
-from urllib.parse import urlparse
-# import smtplib
 
 import logging
 from dotenv import load_dotenv
 import requests
 from twilio.rest import Client
 
-from apscheduler.schedulers.blocking import BlockingScheduler
 
 DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
@@ -28,8 +25,6 @@ load_dotenv()
 BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
 PHONE_NUMBERS: list = [os.environ.get('besteman_number'), os.environ.get('stephen_number')]
-
-schedule = BlockingScheduler()
 
 
 def get_enabled_miners_from_db():
@@ -96,7 +91,7 @@ def send_text_message(offline_workers: list) -> None:
             from_=os.environ.get('twilio_number'),
             body=txt_body)
 
-@schedule.scheduled_job('interval', seconds=10)
+
 def main():
     """Main function that start the process
     """
@@ -114,5 +109,3 @@ def main():
     #     send_text_message(offline_workers)
     # else:
     #     print('No Workers are at 0')
-
-schedule.start()
