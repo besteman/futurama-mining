@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flaskr.extensions import db, User, Miner
 
 
 def create_app(test_config=None):
@@ -28,8 +29,10 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from . import db
     db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
 
     from . import auth
     app.register_blueprint(auth.bp)
@@ -40,3 +43,7 @@ def create_app(test_config=None):
 
     return app
 
+app = create_app()
+app.app_context().push()
+# from flaskr.extensions import User, Miner
+# db.create_all()
