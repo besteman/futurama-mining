@@ -33,13 +33,7 @@
       </a>
     </th>
       <td>{{ miner['name'] }}</td>
-      <td>
-        {% if miner['enabled'] == 1 %}
-            True
-          {% else %}
-            False
-        {% endif %}
-      </td>
+      <td>{{ miner['enabled'] }}</td>
       <td>{{ miner['created_at'].strftime('%Y-%m-%d') }}</td>
     </tr>
   {% endfor %}
