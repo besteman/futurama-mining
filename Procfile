@@ -1,2 +1,2 @@
 clock: python flaskr/cronjob.py
-web: gunicorn --log-level=debug flaskr:app
+web: flask db upgrade; flask translate compile; gunicorn --log-level=debug flaskr:app
