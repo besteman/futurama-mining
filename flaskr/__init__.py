@@ -2,6 +2,7 @@ import os
 from logging.config import dictConfig
 import logging
 from flask import Flask
+from flask_migrate import Migrate
 from flaskr.extensions import db, User, Miner
 from flaskr.config import Config
 
@@ -66,6 +67,7 @@ def create_app(test_config=None):
 
     db.init_app(app)
     app.app_context().push()
+    migrate = Migrate(app, db)
     with app.app_context():
         db.create_all()
 
