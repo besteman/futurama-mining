@@ -11,6 +11,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 from flaskr.alerts import main
 from flaskr.extensions import db, Miner, User
+from flaskr import app
 
 bp = Blueprint('index', __name__)
 
@@ -26,13 +27,7 @@ def index():
     # scheduler.start()
     miners = Miner.query.all()
 
-    if len(miners) == 0:
-        planet_express = Miner(name='planet_express', enabled=True, created_user_id=1)
-        nimbus = Miner(name='nimbus', enabled=False, created_user_id=1)
-        db.session.add(planet_express)
-        db.session.add(nimbus)
-        db.session.commit()
-        miners = Miner.query.all()
+    app.logger(f'Miners found: {miners}')
 
     return render_template('miner/index.html', miners=miners)
 
@@ -60,12 +55,16 @@ def create():
         else:
 
             try:
+                app.logger(f'Creating miner: {name}, {enabled}, {g.user.id}')
                 user_created_miner = Miner(name=name, enabled=enabled, created_user_id=g.user.id)
                 db.session.add(user_created_miner)
                 db.session.commit()
+                app.logger(f'Created miner: {name}, {enabled}, {g.user.id}')
             except IntegrityError as err:
                 db.session.rollback()
                 return render_template('miner/dup_name.html')
+            except Exception as err:
+                app.logger(f'Created miner: {name}, {enabled}, {g.user.id}')
             return redirect(url_for('index.index'))
 
     return render_template('miner/create.html')
@@ -92,9 +91,11 @@ def update(id):
         if error is not None:
             flash(error)
         else:
+            app.logger(f'Updating miner: {name}, {enabled}, {id}')
             miner.name = name
             miner.enabled = enabled
             db.session.commit()
+            app.logger(f'Updated miner: {name}, {enabled}, {id}')
             return redirect(url_for('index.index'))
 
     return render_template('miner/update.html', miner=miner)
@@ -104,14 +105,16 @@ def update(id):
 @login_required
 def delete(id):
     miner = get_miner(id)
+    app.logger(f'Deleting miner: {name}, {enabled}, {id}')
     db.session.delete(miner)
     db.session.commit()
+    app.logger(f'Deleted miner: {name}, {enabled}, {id}')
     return redirect(url_for('index.index'))
 
 
 def get_miner(id, check_author=True):
     miner = Miner.query.get(id)
-
+    app.logger(f'Found miner for get_miner with {id}: {miner}')
     if miner is None:
         abort(404, f"Post id {id} doesn't exist.")
 

@@ -8,6 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flaskr.extensions import db
 
 from flaskr.extensions import User
+from flaskr import app
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -16,8 +17,9 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def login():
     users = User.query.all()
 
+    app.logger(f'Users: {user}')
+
     if len(users) == 0:
-        print('here and there')
         stephen_user = User(username='stephen', password=generate_password_hash('1234'))
         besteman_user = User(username='besteman', password=generate_password_hash('123'))
         db.session.add(stephen_user)
@@ -28,12 +30,14 @@ def login():
         username = request.form['username']
         password = request.form['password']
         error = None
-
+        app.logger(f'Logging in for: {username}')
         user = User.query.filter_by(username=username).first()
 
         if user is None:
+            app.logger(f'Username not right for {user}')
             error = 'Incorrect username.'
         elif not check_password_hash(user.password, password):
+            app.logger(f'Password not right for {user}')
             error = 'Incorrect password.'
         if error is None:
             session.clear()
@@ -52,10 +56,8 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
+        app.logger(f'Setting global user as {g.user} and id {g.user.id}')
         g.user = User.query.get(user_id)
-        # g.user = get_db().execute(
-        #     'SELECT * FROM user WHERE id = ?', (user_id,)
-        # ).fetchone()
 
 
 @bp.route('/logout')
