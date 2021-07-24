@@ -104,7 +104,7 @@ def main():
 
     print(f'Offline Workers: {offline_workers}')
 
-    # if offline_workers:
-    #     send_text_message(offline_workers)
-    # else:
-    #     print('No Workers are at 0')
+    if offline_workers:
+        send_text_message(offline_workers)
+    else:
+        print('No Workers are at 0')
