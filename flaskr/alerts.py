@@ -6,12 +6,15 @@ from dotenv import load_dotenv
 import requests
 from twilio.rest import Client
 
-
+from flaskr import create_app
 from flaskr.extensions import db, Miner
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 load_dotenv()
+
+app = create_app()
+app.app_context().push()
 
 # ACCOUNT_SID = os.environ['account_sid'] or None
 # AUTH_TOKEN = os.environ['auth_token'] or None

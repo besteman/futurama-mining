@@ -29,22 +29,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # dictConfig({
-    #     'version': 1,
-    #     'formatters': {'default': {
-    #         'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-    #     }},
-    #     'handlers': {'wsgi': {
-    #         'class': 'logging.StreamHandler',
-    #         'stream': 'ext://flask.logging.wsgi_errors_stream',
-    #         'formatter': 'default'
-    #     }},
-    #     'root': {
-    #         'level': 'INFO',
-    #         'handlers': ['wsgi']
-    #     }
-    # })
-
     if not app.debug and not app.testing:
 
         if app.config['LOG_TO_STDOUT']:
@@ -63,7 +47,7 @@ def create_app(test_config=None):
             app.logger.addHandler(file_handler)
 
         app.logger.setLevel(logging.INFO)
-        app.logger.info('Microblog startup')
+        app.logger.info('Miner Web startup')
 
     db.init_app(app)
     app.app_context().push()
