@@ -56,16 +56,16 @@ def create():
         else:
 
             try:
-                logging.info(f'Creating miner: {name}, {enabled}, {g.user.id}')
+                logging.info(f'Creating miner: {name}, {enabled}, {g.user}')
                 user_created_miner = Miner(name=name, enabled=enabled, created_user_id=g.user.id)
                 db.session.add(user_created_miner)
                 db.session.commit()
-                logging.info(f'Created miner: {name}, {enabled}, {g.user.id}')
+                logging.info(f'Created miner: {name}, {enabled}, {g.user}')
             except IntegrityError as err:
                 db.session.rollback()
                 return render_template('miner/dup_name.html')
             except Exception as err:
-                logging.info(f'Created miner: {name}, {enabled}, {g.user.id}')
+                logging.info(f'Created miner: {name}, {enabled}, {g.user}')
             return redirect(url_for('index.index'))
 
     return render_template('miner/create.html')
