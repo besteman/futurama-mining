@@ -5,12 +5,12 @@ from flask.cli import with_appcontext
 from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
-from flaskr.db import get_db
 from sqlite3 import IntegrityError
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from flaskr.alerts import main
+from flaskr.extensions import db, Miner, User
 
 bp = Blueprint('index', __name__)
 
@@ -19,16 +19,20 @@ bp = Blueprint('index', __name__)
 def index():
 
 
-    # Create an instance of scheduler and add function.
-    scheduler = BlockingScheduler()
-    scheduler.add_job(main, "interval", seconds=10)
+    # # Create an instance of scheduler and add function.
+    # scheduler = BlockingScheduler()
+    # scheduler.add_job(main, "interval", seconds=10)
 
-    scheduler.start()
-    db = get_db()
-    miners = db.execute(
-        'SELECT id, name, enabled, created_at'
-        ' FROM miner'
-    ).fetchall()
+    # scheduler.start()
+    miners = Miner.query.all()
+
+    if len(miners) == 0:
+        planet_express = Miner(name='planet_express', enabled=True, created_user_id=1)
+        nimbus = Miner(name='nimbus', enabled=False, created_user_id=1)
+        db.session.add(planet_express)
+        db.session.add(nimbus)
+        db.session.commit()
+        miners = Miner.query.all()
 
     return render_template('miner/index.html', miners=miners)
 
@@ -36,11 +40,17 @@ def index():
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
-    main()
+
     if request.method == 'POST':
         name = request.form['name']
-        enabled = request.form['enabled']
+        user_enabled = request.form['enabled']
         error = None
+
+        if user_enabled == 'True':
+            enabled = True
+        else:
+            enabled = False
+
 
         if not name:
             error = 'Name is required.'
@@ -48,17 +58,13 @@ def create():
         if error is not None:
             flash(error)
         else:
-            db = get_db()
 
             try:
-                db.execute(
-                    'INSERT INTO miner (name, enabled)'
-                    ' VALUES (?, ?)',
-                    (name, enabled)
-                )
-                db.commit()
+                user_created_miner = Miner(name=name, enabled=enabled, created_user_id=g.user.id)
+                db.session.add(user_created_miner)
+                db.session.commit()
             except IntegrityError as err:
-                db.rollback()
+                db.session.rollback()
                 return render_template('miner/dup_name.html')
             return redirect(url_for('index.index'))
 
@@ -72,8 +78,13 @@ def update(id):
 
     if request.method == 'POST':
         name = request.form['name']
-        enabled = request.form['enabled']
+        user_enabled = request.form['enabled']
         error = None
+
+        if user_enabled == 'True':
+            enabled = True
+        else:
+            enabled = False
 
         if not name:
             error = 'Name is required.'
@@ -81,13 +92,9 @@ def update(id):
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            db.execute(
-                'UPDATE miner SET name = ?, enabled = ?'
-                ' WHERE id = ?',
-                (name, enabled, id)
-            )
-            db.commit()
+            miner.name = name
+            miner.enabled = enabled
+            db.session.commit()
             return redirect(url_for('index.index'))
 
     return render_template('miner/update.html', miner=miner)
@@ -96,20 +103,14 @@ def update(id):
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
 def delete(id):
-    get_miner(id)
-    db = get_db()
-    db.execute('DELETE FROM miner WHERE id = ?', (id,))
-    db.commit()
+    miner = get_miner(id)
+    db.session.delete(miner)
+    db.session.commit()
     return redirect(url_for('index.index'))
 
 
 def get_miner(id, check_author=True):
-    miner = get_db().execute(
-        'SELECT m.id, name, enabled, created_at'
-        ' FROM miner m'
-        ' WHERE m.id = ?',
-        (id,)
-    ).fetchone()
+    miner = Miner.query.get(id)
 
     if miner is None:
         abort(404, f"Post id {id} doesn't exist.")
