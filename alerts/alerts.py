@@ -105,6 +105,8 @@ def main():
 
     logging.info(f'Offline Workers: {offline_workers}')
 
+    print('test')
+
     # if offline_workers:
     #     send_text_message(offline_workers)
     # else:
