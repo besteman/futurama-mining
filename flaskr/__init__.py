@@ -1,5 +1,6 @@
 import os
 from logging.config import dictConfig
+import logging
 from flask import Flask
 from flaskr.extensions import db, User, Miner
 from flaskr.config import Config
