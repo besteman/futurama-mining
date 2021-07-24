@@ -1,4 +1,6 @@
 import os
+import psycopg2
+import urlparse
 # import smtplib
 
 import logging
@@ -6,9 +8,17 @@ from dotenv import load_dotenv
 import requests
 from twilio.rest import Client
 
-from flaskr.extensions import db, Miner
-
 from apscheduler.schedulers.blocking import BlockingScheduler
+
+
+url = urlparse.urlparse(os.environ.get('DATABASE_URL'))
+db = "dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname)
+schema = "schema.sql"
+conn = psycopg2.connect(db)
+
+cur = conn.cursor()
+
+logging.info(f'DB connection info: {db}')
 
 load_dotenv()
 
@@ -27,13 +37,14 @@ schedule = BlockingScheduler()
 
 def get_enabled_miners_from_db():
 
-    enabled_miners_from_db = Miner.query.filter_by(enabled=True).all()
+    cur.execute("""SELECT name FROM miner WHERE enabled = true""")
+    rows = cur.fetchall()
 
-    logging.info(f'Miners found DB: {enabled_miners_from_db}')
+    logging.info(f'Miners found DB: {rows}')
 
     enabled_miners = []
     for miner in enabled_miners_from_db:
-        enabled_miners.append(enabled_miners_from_db.name)
+        enabled_miners.append(row[0])
 
     logging.info(f'enabled_miners are: {enabled_miners}')
 
