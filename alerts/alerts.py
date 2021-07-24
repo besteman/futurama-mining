@@ -10,11 +10,8 @@ from twilio.rest import Client
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-
-url = urlparse(os.environ.get('DATABASE_URL'))
-db = "dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname)
-schema = "schema.sql"
-conn = psycopg2.connect(db)
+DATABASE_URL = os.environ['DATABASE_URL']
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 cur = conn.cursor()
 
