@@ -7,7 +7,7 @@ db = SQLAlchemy()
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
-    password = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(20), unique=True, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     miner = db.relationship('Miner', backref='user', lazy=True)
 
