@@ -17,7 +17,7 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def login():
     users = User.query.all()
 
-    logging.info(f'Users: {user}')
+    logging.info(f'Users: {users}')
 
     if len(users) == 0:
         stephen_user = User(username='stephen', password=generate_password_hash('1234'))
