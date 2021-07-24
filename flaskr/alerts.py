@@ -44,7 +44,7 @@ def get_enabled_miners_from_db():
 
     enabled_miners = []
     for miner in rows:
-        enabled_miners.append(row[0])
+        enabled_miners.append(miner[0])
 
     logging.info(f'enabled_miners are: {enabled_miners}')
 
