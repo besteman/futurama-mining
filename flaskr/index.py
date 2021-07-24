@@ -62,12 +62,11 @@ def create():
                 db.session.add(user_created_miner)
                 db.session.commit()
                 current_app.logger.info(f'Created miner: {name}, {enabled}, {g.user}')
-                miners = Miner.query.all()
-                current_app.logger.info(miners)
             except IntegrityError as err:
                 db.session.rollback()
                 return render_template('miner/dup_name.html')
             except Exception as err:
+                db.session.rollback()
                 current_app.logger.error(f'Erroring creating miner: {name}, {enabled}, {g.user}, {err}')
             return redirect(url_for('index.index'))
 
