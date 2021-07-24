@@ -24,23 +24,23 @@ ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
 PHONE_NUMBERS: list = [os.environ.get('besteman_number'), os.environ.get('stephen_number')]
 
 
-def get_enabled_miners_from_db():
-    
-    db = get_db()
+# def get_enabled_miners_from_db():
 
-    enabled_miners = []
+#     db = get_db()
 
-    enabled_miners_from_db = db.execute(
-        'SELECT name'
-        ' FROM miner where enabled = 1'
-    ).fetchall()
+#     enabled_miners = []
 
-    for miner in enabled_miners:
-        enabled_miners.append(enabled_miners_from_db['name'])
+#     enabled_miners_from_db = db.execute(
+#         'SELECT name'
+#         ' FROM miner where enabled = 1'
+#     ).fetchall()
 
-    logging.info(enabled_miners)
+#     for miner in enabled_miners:
+#         enabled_miners.append(enabled_miners_from_db['name'])
 
-    return enabled_miners
+#     logging.info(enabled_miners)
+
+#     return enabled_miners
 
 
 def get_workers_reported_hashrate() -> dict:
@@ -66,8 +66,8 @@ def check_workers_hashrate(workers_hashrate: dict) -> list:
     """
     offline_workers: list = []
 
-    enabled_miners: list = get_enabled_miners_from_db()
-
+    # enabled_miners: list = get_enabled_miners_from_db()
+    enabled_miners = []
     for worker in workers_hashrate:
         if worker['hashrate'] == 0 and worker['worker'] not in enabled_miners:
             offline_workers.append(worker['worker'])
