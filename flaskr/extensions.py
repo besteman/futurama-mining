@@ -6,8 +6,8 @@ db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(20), unique=True, nullable=False)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    password = db.Column(db.String(150), unique=True, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     miner = db.relationship('Miner', backref='user', lazy=True)
 
@@ -20,7 +20,7 @@ class User(db.Model):
 
 class Miner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
+    name = db.Column(db.String(50), unique=True, nullable=False)
     enabled = db.Column(db.Boolean,  nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     created_user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
