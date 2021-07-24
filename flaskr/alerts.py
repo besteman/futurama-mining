@@ -38,7 +38,7 @@ PHONE_NUMBERS: list = [os.environ.get('besteman_number'), os.environ.get('stephe
 #     for miner in enabled_miners:
 #         enabled_miners.append(enabled_miners_from_db['name'])
 
-#     logging.info(enabled_miners)
+#     current_app.logger.info(enabled_miners)
 
 #     return enabled_miners
 

@@ -1,2 +1,2 @@
 clock: python flaskr/cronjob.py
-web: gunicorn flaskr:app
+web: gunicorn --log-level=debug flaskr:app

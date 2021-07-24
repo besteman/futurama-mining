@@ -9,6 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flaskr.extensions import db
 
 from flaskr.extensions import User
+from flask import current_app
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -17,7 +18,7 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def login():
     users = User.query.all()
 
-    logging.info(f'Users: {users}')
+    current_app.logger.info(f'Users: {users}')
 
     if len(users) == 0:
         stephen_user = User(username='stephen', password=generate_password_hash('1234'))
@@ -30,15 +31,16 @@ def login():
         username = request.form['username']
         password = request.form['password']
         error = None
-        logging.info(f'Logging in for: {username}')
+        current_app.logger.info(f'Logging in for: {username}')
         user = User.query.filter_by(username=username).first()
 
         if user is None:
-            logging.info(f'Username not right for {user}')
+            current_app.logger.info(f'Username not right for {user}')
             error = 'Incorrect username.'
         elif not check_password_hash(user.password, password):
-            logging.info(f'Password not right for {user}')
+            current_app.logger.info(f'Password not right for {user}')
             error = 'Incorrect password.'
+
         if error is None:
             session.clear()
             session['user_id'] = user.id
@@ -56,7 +58,7 @@ def load_logged_in_user():
         g.user = None
     else:
         g.user = user_id
-        logging.info(f'Setting global user as {g.user}')
+        current_app.logger.info(f'Setting global user as {g.user}')
 
 
 @bp.route('/logout')

@@ -3,6 +3,7 @@ import logging
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
+from flask import current_app
 from flask.cli import with_appcontext
 from werkzeug.exceptions import abort
 
@@ -28,7 +29,7 @@ def index():
     # scheduler.start()
     miners = Miner.query.all()
 
-    logging.info(f'Miners found: {miners}')
+    current_app.logger.info(f'Miners found: {miners}')
 
     return render_template('miner/index.html', miners=miners)
 
@@ -36,7 +37,7 @@ def index():
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
-
+    current_app.logger.info(f'Starting create route')
     if request.method == 'POST':
         name = request.form['name']
         user_enabled = request.form['enabled']
@@ -56,16 +57,18 @@ def create():
         else:
 
             try:
-                logging.info(f'Creating miner: {name}, {enabled}, {g.user}')
-                user_created_miner = Miner(name=name, enabled=enabled, created_user_id=g.user.id)
+                current_app.logger.info(f'Creating miner: {name}, {enabled}, {g.user}')
+                user_created_miner = Miner(name=name, enabled=enabled, created_user_id=g.user)
                 db.session.add(user_created_miner)
                 db.session.commit()
-                logging.info(f'Created miner: {name}, {enabled}, {g.user}')
+                current_app.logger.info(f'Created miner: {name}, {enabled}, {g.user}')
+                miners = Miner.query.all()
+                current_app.logger.info(miners)
             except IntegrityError as err:
                 db.session.rollback()
                 return render_template('miner/dup_name.html')
             except Exception as err:
-                logging.info(f'Created miner: {name}, {enabled}, {g.user}')
+                current_app.logger.error(f'Erroring creating miner: {name}, {enabled}, {g.user}, {err}')
             return redirect(url_for('index.index'))
 
     return render_template('miner/create.html')
@@ -92,11 +95,11 @@ def update(id):
         if error is not None:
             flash(error)
         else:
-            logging.info(f'Updating miner: {name}, {enabled}, {id}')
+            current_app.logger.info(f'Updating miner: {name}, {enabled}, {id}')
             miner.name = name
             miner.enabled = enabled
             db.session.commit()
-            logging.info(f'Updated miner: {name}, {enabled}, {id}')
+            current_app.logger.info(f'Updated miner: {name}, {enabled}, {id}')
             return redirect(url_for('index.index'))
 
     return render_template('miner/update.html', miner=miner)
@@ -106,16 +109,16 @@ def update(id):
 @login_required
 def delete(id):
     miner = get_miner(id)
-    logging.info(f'Deleting miner: {name}, {enabled}, {id}')
+    current_app.logger.info(f'Deleting miner: {miner.name}, {miner.enabled}, {id}')
     db.session.delete(miner)
     db.session.commit()
-    logging.info(f'Deleted miner: {name}, {enabled}, {id}')
+    current_app.logger.info(f'Deleted miner: {miner.name}, {miner.enabled}, {id}')
     return redirect(url_for('index.index'))
 
 
 def get_miner(id, check_author=True):
     miner = Miner.query.get(id)
-    logging.info(f'Found miner for get_miner with {id}: {miner}')
+    current_app.logger.info(f'Found miner for get_miner with {id}: {miner}')
     if miner is None:
         abort(404, f"Post id {id} doesn't exist.")
 
