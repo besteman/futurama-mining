@@ -12,7 +12,6 @@ from sqlite3 import IntegrityError
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from flaskr.alerts import main
 from flaskr.extensions import db, Miner, User
 
 bp = Blueprint('index', __name__)
@@ -21,12 +20,6 @@ bp = Blueprint('index', __name__)
 @bp.route('/')
 def index():
 
-
-    # # Create an instance of scheduler and add function.
-    # scheduler = BlockingScheduler()
-    # scheduler.add_job(main, "interval", seconds=10)
-
-    # scheduler.start()
     miners = Miner.query.all()
 
     current_app.logger.info(f'Miners found: {miners}')

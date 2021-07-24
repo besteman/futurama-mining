@@ -15,7 +15,7 @@ conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 cur = conn.cursor()
 
-logging.info(f'DB connection info: {db}')
+logging.info(f'DB connection info: {DATABASE_URL}, {conn}, {cur}')
 
 load_dotenv()
 
