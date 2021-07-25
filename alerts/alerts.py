@@ -1,23 +1,41 @@
 import os
-# import smtplib
+import psycopg2
 
+import logging
 from dotenv import load_dotenv
 import requests
 from twilio.rest import Client
+
 
 load_dotenv()
 
 ACCOUNT_SID = os.environ['account_sid']
 AUTH_TOKEN = os.environ['auth_token']
 
-# GMAIL_ADDRESS: str = os.environ['gmail_address']
-# GMAIL_PW: str = os.environ['gmail_pw']
-
 BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
-PHONE_NUMBERS: list = []
+PHONE_NUMBERS: list = [os.environ.get('besteman_number'), os.environ.get('stephen_number')]
 
-BLACKLIST = ['best_3070', '3080_is_better', 'quartz_3070', 'planet_express', 'Nimbus', 'test_rig_windows']
+DATABASE_URL = os.environ['DATABASE_URL']
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
+cur = conn.cursor()
+
+
+def get_enabled_miners_from_db():
+
+    cur.execute("""SELECT name FROM miner WHERE enabled = true""")
+    rows = cur.fetchall()
+
+    print(f'Miners found DB: {rows}')
+
+    enabled_miners = []
+    for miner in rows:
+        enabled_miners.append(miner[0])
+
+    print(f'enabled_miners are: {enabled_miners}')
+
+    return enabled_miners
 
 
 def get_workers_reported_hashrate() -> dict:
@@ -43,15 +61,16 @@ def check_workers_hashrate(workers_hashrate: dict) -> list:
     """
     offline_workers: list = []
 
+    enabled_miners: list = get_enabled_miners_from_db()
     for worker in workers_hashrate:
-        if worker['hashrate'] == 0 and worker['worker'] not in BLACKLIST:
+        if worker['hashrate'] == 0 and worker['worker'] in enabled_miners:
             offline_workers.append(worker['worker'])
 
     return offline_workers
 
 
-def send_email(offline_workers: list) -> None:
-    """If any workers' hashrate is equal to zero, this function will be called and send any email
+def send_text_message(offline_workers: list) -> None:
+    """If any workers' hashrate is equal to zero, this function will be called and send a text message
 
     Args:
     offline_workers (list): Workers that hashrate is equal to zero
@@ -63,39 +82,24 @@ def send_email(offline_workers: list) -> None:
     for phone_number in PHONE_NUMBERS:
         client.api.account.messages.create(
             to=phone_number,
-            from_="+12132925602",
+            from_=os.environ.get('twilio_number'),
             body=txt_body)
-
-    # try:
-    #     server = smtplib.SMTP(host='smtp.gmail.com', port=587)
-    #     server.ehlo()
-    #     server.starttls()
-    #     server.login(GMAIL_ADDRESS, GMAIL_PW)
-
-    #     server.sendmail(GMAIL_ADDRESS, EMAIL_ADDRESS, email_body)
-    #     server.quit()
-    # except Exception as e:
-    #     print(f'Something went wrong... {e}')
 
 
 def main():
     """Main function that start the process
     """
-    print("Starting")
+    print("Starting Cronjob")
 
     workers_hashrate: dict = get_workers_reported_hashrate()
 
-    print(workers_hashrate)
+    print(f'Workers hashrates {workers_hashrate}')
 
     offline_workers: list = check_workers_hashrate(workers_hashrate)
 
-    print(offline_workers)
+    print(f'Offline Workers: {offline_workers}')
 
     if offline_workers:
-        send_email(offline_workers)
+        send_text_message(offline_workers)
     else:
         print('No Workers are at 0')
-
-
-if __name__ == "__main__":
-    main()

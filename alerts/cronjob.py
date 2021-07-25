@@ -1,6 +1,6 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from main import main
+from alerts import main
 
 # Create an instance of scheduler and add function.
 scheduler = BlockingScheduler()

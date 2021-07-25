@@ -1,0 +1,1 @@
+[{"miner": "here", "enabled": true}, {"miner": "there", "enabled": true}, {"miner": "bye", "enabled": true}, {"miner": "this", "enabled": true}, {"miner": "that", "enabled": false}, {"miner": "hello", "enabled": "True"}, {"miner": "hello1", "enabled": "true"}, {"miner": "hello2", "enabled": true}, {"miner": "hello3", "enabled": false}]
