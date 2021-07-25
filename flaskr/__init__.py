@@ -1,18 +1,16 @@
 import os
-from logging.config import dictConfig
 import logging
+from logging.handlers import RotatingFileHandler
+
 from flask import Flask
-from flask_migrate import Migrate
-from flaskr.extensions import db, migrate, User, Miner
+
+from flaskr.extensions import db, migrate
 from flaskr.config import Config
 
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-
-    # if __name__ == "__main__":
-    #     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
 
     app.config.from_object(Config)
 
@@ -64,7 +62,6 @@ def create_app(test_config=None):
 
     return app
 
+
 app = create_app()
 app.app_context().push()
-# from flaskr.extensions import User, Miner
-# db.create_all()
