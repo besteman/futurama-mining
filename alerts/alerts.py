@@ -7,7 +7,6 @@ import requests
 from twilio.rest import Client
 
 
-
 load_dotenv()
 
 ACCOUNT_SID = os.environ['account_sid']
