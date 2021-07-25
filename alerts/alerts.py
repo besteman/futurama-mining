@@ -7,24 +7,20 @@ import requests
 from twilio.rest import Client
 
 
-DATABASE_URL = os.environ['DATABASE_URL']
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-
-cur = conn.cursor()
-
-print(f'DB connection info: {DATABASE_URL}, {conn}, {cur}')
 
 load_dotenv()
 
-# ACCOUNT_SID = os.environ['account_sid'] or None
-# AUTH_TOKEN = os.environ['auth_token'] or None
-
-# GMAIL_ADDRESS: str = os.environ['gmail_address']
-# GMAIL_PW: str = os.environ['gmail_pw']
+ACCOUNT_SID = os.environ['account_sid']
+AUTH_TOKEN = os.environ['auth_token']
 
 BASE_ETH_URL: str = 'https://api.nanopool.org/v1/eth/'
 ETH_MINER_ADDRESS: str = '0x5d78c71912ea88c23c602c8e0d5363d1e3cba4be'
 PHONE_NUMBERS: list = [os.environ.get('besteman_number'), os.environ.get('stephen_number')]
+
+DATABASE_URL = os.environ['DATABASE_URL']
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
+cur = conn.cursor()
 
 
 def get_enabled_miners_from_db():
