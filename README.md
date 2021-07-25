@@ -22,7 +22,7 @@ python3 -m venv futurama-mining-env
 . futurama-mining-env/bin/activate
 ```
 
-* Upgarde Pip
+* Upgrade Pip
 
 ```sh
 pip install --upgrade pip
