@@ -1,10 +1,10 @@
-from flask import Flask
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
-from flask_migrate import Migrate
 
 db = SQLAlchemy()
 migrate = Migrate(compare_type=True)
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,13 +20,13 @@ class User(db.Model):
         created_date: {self.created_at}
     """
 
+
 class Miner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     enabled = db.Column(db.Boolean,  nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
-    created_user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
-        nullable=False)
+    created_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return f"""
